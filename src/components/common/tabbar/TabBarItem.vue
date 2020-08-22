@@ -23,7 +23,7 @@ export default {
     }
   },
   computed: {
-    // 根据这个路由的路径（this.$route.path）与this.path的路径是否一致来判断当前是否处于活跃
+    // 这个路由的路径（this.$route.path）与this.path的路径是否一致来判断当前是否处于活跃
     isActive () {
       return this.$route.path.includes(this.path)
     },
