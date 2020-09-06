@@ -38,11 +38,12 @@ import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/tabControl/TabControl'
 import GoodsList from 'components/content/goods/GoodsList'
 import Scroll from 'components/common/scroll/Scroll'
-import BackTop from 'components/content/backTop/BackTop'
 
 import HomeSwiper from './childrenHome/HomeSwiper'
 import HomeRecommend from './childrenHome/HomeRecommend'
 import HomeFeature from './childrenHome/HomeFeature'
+
+import { itemListenerMixin, backTopMixin } from 'common/mixin'
 
 import { getHomeMultidata, getHomeGoods } from 'network/home'
 
@@ -53,11 +54,11 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop,
     HomeSwiper,
     HomeRecommend,
     HomeFeature
   },
+  mixins: [itemListenerMixin, backTopMixin],
   data () {
     return {
       banner: [],
@@ -68,10 +69,9 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: 'pop',
-      isBackTopShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY: 0
+      saveY: 0,
     }
   },
   computed: {
@@ -83,15 +83,6 @@ export default {
     /**
      * 事件监听相关方法
      */
-    debounce (handler, delay) {
-      let timer = null
-      return function (...args) {
-        if (timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-          handler.call(this, args)
-        }, delay)
-      }
-    },
     itemClick (index) {
       switch (index) {
         case 0:
@@ -106,9 +97,6 @@ export default {
       }
       this.$refs.tabControl1.currentIndex = index
       this.$refs.tabControl2.currentIndex = index
-    },
-    backClick () {
-      this.$refs.scroll.scrollTo(0, 0)
     },
     contentScroll (position) {
       // 判断backTop是否显示
@@ -151,19 +139,16 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
-  mounted () {
-    // 监听goodsListItem中图片加载完成
-    const refresh = this.debounce(this.$refs.scroll.refresh, 500)
-    this.$bus.$on('itemImgLoad', () => {
-      refresh()
-    })
-  },
   activated () {
     this.$refs.scroll.scrollTo(0, this.saveY, 0)
     this.$refs.scroll.refresh()
   },
   deactivated () {
+    // 保存Y值
     this.saveY = this.$refs.scroll.getScrollY()
+
+    // 取消全局事件监听
+    this.$bus.$off('itemImgLoad', this.itemImgListener)
   }
 }
 </script>

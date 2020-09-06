@@ -8,7 +8,6 @@
 
 <script>
 import BScroll from 'better-scroll'
-// import { getHomeGoods } from 'network/home'
 
 export default {
   name: 'Scroll',
@@ -22,6 +21,10 @@ export default {
       type: Number,
       default: 0
     },
+    pullUpLoad: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     scrollTo (x, y, time = 300) {
@@ -41,7 +44,7 @@ export default {
     this.scroll = new BScroll(this.$refs.wrapper, {
       probeType: this.probeType,
       click: true,
-      pullUpLoad: true,
+      pullUpLoad: this.pullUpLoad,
       observeDOM: true // 开启对 scroll 区域 DOM 改变的探测。当插件被使用后，当 scroll 的 dom 元素发生时，将会触发 scroll 的 refresh 方法
     })
 
